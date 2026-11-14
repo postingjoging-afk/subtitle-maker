@@ -65,7 +65,7 @@ input[type=range]{width:100%;height:32px;accent-color:#fff}
 .card i{position:absolute;right:5px;bottom:2px;font:600 11px/1 sans-serif;color:#aaa;font-style:normal}
 .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.96);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:5}
 .bar-in{max-width:1080px;margin:0 auto}
-.bar .seg{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--sub)}
+.bar .seg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--sub)}
 .bar .seg .chip{min-height:36px;padding:0 12px;font-size:13px}
 .bar .main-row{display:flex;gap:8px}
 .bar .main-row .btn{flex:1;font-size:15px;padding:0 6px;white-space:nowrap}
@@ -123,6 +123,7 @@ footer p{margin:4px 0}
 
   <footer>
     <p>打った文字はサーバーに送りません。画像はすべてこの端末の中で作ります（字体だけ Google Fonts から読み込みます）。</p>
+    <p>「ノーマル」の字体は Kaisei Decol（作者: Kaisei Project Authors）で、SIL Open Font License 1.1 のもとで使っています。<a href="licenses/KaiseiDecol-OFL.txt" style="color:inherit">ライセンスの全文</a></p>
     <p>アニメのサブタイトルの見せ方をまねた「サブタイトル風」の画像を作る、非公式のツールです。</p>
   </footer>
 </div>
@@ -132,6 +133,8 @@ footer p{margin:4px 0}
     <div class="seg"><span><b style="color:#fff">3</b> 共有する画像</span>
       <button class="chip" id="selAll" aria-pressed="true">すべて</button>
       <button class="chip" id="selSum" aria-pressed="false">まとめだけ</button>
+      <button class="chip" id="imgOnly" aria-pressed="false">画像だけで共有</button>
+      <button class="chip" id="resetShare" style="display:none">最初から</button>
     </div>
     <div class="main-row">
       <button class="btn main" id="shareBtn">X に共有</button>
@@ -147,7 +150,7 @@ footer p{margin:4px 0}
 'use strict';
 var SITE_URL='https://postingjoging-afk.github.io/subtitle-maker/';
 var PRESETS=[
- {id:'std',name:'ノーマル',one:['Zen Antique Soft',400],sum:['Zen Old Mincho',900],hint:'1文字は丸みのある筆ふう、まとめは極太の明朝。見本にいちばん近い組み合わせです。'},
+ {id:'std',name:'ノーマル',one:['Kaisei Decol',500],sum:['Kaisei Decol',700],hint:'1文字は止め・はらいに丸みのある、流れる明朝。まとめは同じ系統の太い明朝です。見本にいちばん近い組み合わせです。'},
  {id:'bold',name:'極太明朝',one:['Noto Serif JP',900],sum:['Noto Serif JP',900],hint:'極太の明朝。力強く、どの文字でもくずれにくいです。'},
  {id:'old',name:'古い活字',one:['Zen Old Mincho',900],sum:['Zen Old Mincho',900],hint:'昔の印刷物のような、かどのある太い明朝です。'},
  {id:'syuku',name:'細筆',one:['Yuji Syuku',400],sum:['Yuji Syuku',400],hint:'細めで品のある筆文字です。'},
@@ -169,7 +172,7 @@ function loadCss(fw,text,force){
 }
 var LINES=[['auto','自動'],['1','1行'],['2','2行'],['3','3行']];
 var st={preset:'std',lines:'auto',indent:true,sc:60,ss:100,sel:'all'};
-try{var sv=JSON.parse(localStorage.getItem('stm')||'{}');['preset','lines','indent','sc','ss'].forEach(function(k){if(k in sv)st[k]=sv[k]})}catch(e){}
+try{var sv=JSON.parse(localStorage.getItem('stm')||'{}');['preset','lines','indent','sc','ss','imgOnly'].forEach(function(k){if(k in sv)st[k]=sv[k]})}catch(e){}
 function save(){try{localStorage.setItem('stm',JSON.stringify(st))}catch(e){}}
 var $=function(id){return document.getElementById(id)};
 var txt=$('txt'),stage=$('stage'),sctx=stage.getContext('2d'),strip=$('strip');
@@ -182,7 +185,7 @@ function cards(){
   return list;
 }
 function preset(){return PRESETS.filter(function(p){return p.id===st.preset})[0]||PRESETS[0]}
-function fstr(fw,px){return fw[1]+' '+px+'px "'+fw[0]+'", "Hiragino Mincho ProN", "Yu Mincho", serif'}
+function fstr(fw,px){return fw[1]+' '+px+'px "'+fw[0]+'", "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif'}
 
 /* 描画 */
 function sizeOf(card,S){return card.type==='char'?[Math.round(1080*S),Math.round(1080*S)]:[Math.round(1080*S),Math.round(899*S)]}
@@ -237,6 +240,8 @@ function ensureFonts(force){
   var p=preset(),t=txt.value+'こうするとサブタイトル風',uniq={};
   var jobs=[p.one,p.sum].map(function(fw){var k=fw.join();if(uniq[k])return null;uniq[k]=1;
     return loadCss(fw,'',force).then(function(){return document.fonts.load(fw[1]+' 100px "'+fw[0]+'"',t)}).then(function(r){return r.length>0||document.fonts.check(fw[1]+' 20px "'+fw[0]+'"',t)}).catch(function(){return false})}).filter(Boolean);
+  /* 主な字体に無い字を補う明朝（無くても止めない） */
+  [p.one,p.sum].forEach(function(fw){var f=['Noto Serif JP',fw[1]<=400?400:700];loadCss(f,'').then(function(){return document.fonts.load(f[1]+' 100px "Noto Serif JP"',t)}).catch(function(){})});
   return Promise.all(jobs).then(function(a){return a.every(Boolean)});
 }
 var retryFonts=false;
@@ -251,7 +256,7 @@ var rafId=0;
 function update(){cancelAnimationFrame(rafId);rafId=requestAnimationFrame(doUpdate)}
 async function doUpdate(){
   var my=++token;stopPlay();
-  cardList=cards();updateCount();
+  cardList=cards();shareIdx=0;updateCount();
   setStatus('字体を読み込み中…');loading=true;setButtons();
   var ok;try{ok=await ensureFonts(retryFonts);retryFonts=false}catch(e){ok=false}
   if(my!==token)return;
@@ -263,7 +268,7 @@ async function doUpdate(){
 function updateCount(){
   var n=cardList.length?cardList.length-1:0;
   $('count').textContent=n?('1文字の画像 '+n+'枚 ＋ まとめ 1枚'):'文を打ってください';
-  var note=n>4?'画像は全部で '+(n+1)+' 枚です。X は 1 回の投稿に載せられる枚数に上限があり、多いと載らないことがあります。載らないときは「まとめだけ」にするか、分けて投稿してください。':'X は 1 回の投稿に載せられる枚数に上限があります。多いと載らないことがあります。';
+  var note=n>4?'画像は全部で '+(n+1)+' 枚です。X に渡せるのは 1 回 4 枚までなので、4 枚ずつ順に共有します。X では 1 回目の投稿に返信して続きを足してください。別の道として「画像を保存」で写真に入れ、X のアプリの投稿画面で画像を選ぶこともできます（一度に選べる枚数は X の決まりしだいです）。':'X に渡せる画像は 1 回 4 枚までです。「画像を保存」で写真に入れ、X のアプリで選んで投稿することもできます。';
   $('limitNote').textContent=note;
 }
 function renderStrip(){
@@ -329,25 +334,44 @@ function shareText(){
   return t+'\n#サブタイトル風 で作った → '+SITE_URL;
 }
 function toast(m,err){var t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},4200)}
-function canShareFiles(files){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare({files:files,text:'x'}))}catch(e){return false}}
+var PER=4,shareIdx=0;
+function canShareData(d){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare(d))}catch(e){return false}}
+function chunksOf(list){var o=[];for(var i=0;i<list.length;i+=PER)o.push(list.slice(i,i+PER));return o}
+function toFiles(list){return list.map(function(x){return new File([x.blob],x.name,{type:'image/png'})})}
+function blobsReady(){return blobs.length===cardList.length&&cardList.length>0}
+function dataFor(files,idx,withText){var d={files:files};if(idx===0&&withText)d.text=shareText();return d}
 function setButtons(){
   var ready=!loading&&cardList.length>0;
   $('saveBtn').disabled=!ready;$('textBtn').disabled=!txt.value.trim();
-  var f=blobs.length===cardList.length&&cardList.length?selected().map(function(x){return new File([x.blob],x.name,{type:'image/png'})}):null;
-  var can=f?canShareFiles(f):!!(navigator.canShare&&navigator.share);
+  var sel=blobsReady()?selected():null,ch=sel?chunksOf(sel):[],n=ch.length;
+  if(shareIdx>=n)shareIdx=0;
+  var can=false;
+  if(sel&&n){var f=toFiles(ch[shareIdx]);can=canShareData(dataFor(f,shareIdx,!st.imgOnly))||canShareData({files:f})}
+  else can=!!(navigator.canShare&&navigator.share);
+  var count=n||Math.ceil((st.sel==='sum'?1:cardList.length)/PER);
   $('shareBtn').disabled=!ready||!can;
-  $('shareBtn').textContent=can?'X に共有':'この端末は画像共有に非対応';
+  $('shareBtn').textContent=can?(count>1?'X に共有（'+(shareIdx+1)+'/'+count+'）':'X に共有'):'この端末は画像共有に非対応';
   $('shareBtn').classList.toggle('main',can);$('saveBtn').classList.toggle('main',!can);
+  $('imgOnly').setAttribute('aria-pressed',!!st.imgOnly);
+  $('resetShare').style.display=shareIdx>0?'':'none';
 }
 $('shareBtn').onclick=async function(){
-  if(blobs.length!==cardList.length){toast('画像を準備しています。もう一度押してください。');await waitBlobs();setButtons();return}
-  var files=selected().map(function(x){return new File([x.blob],x.name,{type:'image/png'})});
-  if(!canShareFiles(files)){toast('この端末では画像をまとめて共有できません。「画像を保存」を使ってください。',true);return}
-  try{await navigator.share({files:files,text:shareText()})}
-  catch(e){if(e&&e.name==='AbortError')return;toast('共有できませんでした。「画像を保存」を使うか、枚数を減らしてください。',true)}
+  if(!blobsReady()){toast('画像を準備しています。もう一度押してください。');await waitBlobs();setButtons();return}
+  var ch=chunksOf(selected()),n=ch.length;if(shareIdx>=n)shareIdx=0;
+  var idx=shareIdx,files=toFiles(ch[idx]),d=dataFor(files,idx,!st.imgOnly),textDropped=false;
+  if(!canShareData(d)&&d.text){d={files:files};textDropped=true}
+  if(!canShareData(d)){toast('この端末では'+files.length+'枚の画像を共有できません。「画像を保存」を使ってください。',true);return}
+  try{await navigator.share(d)}
+  catch(e){if(e&&e.name==='AbortError')return;toast('共有できませんでした。「画像だけで共有」を押して試すか、「画像を保存」を使ってください。',true);return}
+  if(idx+1<n){
+    shareIdx=idx+1;setButtons();
+    toast((idx+1)+'/'+n+' 回目を共有しました。次は「X に共有（'+(shareIdx+1)+'/'+n+'）」を押してください。X では、1 回目の投稿に返信して続きを足します。'+(textDropped?'（この回は本文なしで渡しました）':''));
+  }else{shareIdx=0;setButtons();if(n>1)toast('すべて共有しました。')}
 };
+$('imgOnly').onclick=function(){st.imgOnly=!st.imgOnly;save();setButtons()};
+$('resetShare').onclick=function(){shareIdx=0;setButtons()};
 $('saveBtn').onclick=async function(){
-  if(blobs.length!==cardList.length){toast('画像を準備しています…');await waitBlobs()}
+  if(!blobsReady()){toast('画像を準備しています…');await waitBlobs()}
   var list=selected();
   for(var i=0;i<list.length;i++){
     var a=document.createElement('a');a.href=URL.createObjectURL(list[i].blob);a.download=list[i].name;document.body.appendChild(a);a.click();a.remove();
@@ -360,7 +384,7 @@ $('textBtn').onclick=function(){
   window.open('https://x.com/intent/post?text='+encodeURIComponent(shareText()),'_blank','noopener');
   toast('本文だけを X に送ります。画像は「画像を保存」で保存してから、投稿画面で付けてください。');
 };
-function setSel(v){st.sel=v;$('selAll').setAttribute('aria-pressed',v==='all');$('selSum').setAttribute('aria-pressed',v==='sum');setButtons()}
+function setSel(v){st.sel=v;shareIdx=0;$('selAll').setAttribute('aria-pressed',v==='all');$('selSum').setAttribute('aria-pressed',v==='sum');setButtons()}
 $('selAll').onclick=function(){setSel('all')};$('selSum').onclick=function(){setSel('sum')};
 
 /* UI 部品 */
