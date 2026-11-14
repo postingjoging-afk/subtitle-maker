@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>サブタイトル風 画像メーカー</title>
+<meta name="description" content="文を打つだけで、1文字ずつの黒い画像と、最後のまとめ画像ができます。X にそのまま送れます。打った文字は端末の外に出ません。">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:title" content="サブタイトル風 画像メーカー">
+<meta property="og:description" content="文を打つだけで、1文字ずつの黒い画像と、最後のまとめ画像ができます。X にそのまま送れます。">
+<meta property="og:image" content="https://morimori-dev.github.io/subtitle-maker/og.png">
+<meta property="og:url" content="https://morimori-dev.github.io/subtitle-maker/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="サブタイトル風 画像メーカー">
+<meta name="twitter:description" content="文を打つだけで、1文字ずつの黒い画像と、最後のまとめ画像ができます。">
+<meta name="twitter:image" content="https://morimori-dev.github.io/subtitle-maker/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+:root{--bg:#000;--panel:#121212;--line:#2a2a2a;--text:#f2f2f2;--sub:#9a9a9a;--accent:#fff;--warn:#ffb4a8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px calc(190px + env(safe-area-inset-bottom))}
+h1{font-size:20px;margin:0 0 4px;font-weight:700}
+.lead{margin:0 0 16px;color:var(--sub);font-size:14px}
+.grid{display:grid;gap:20px}
+@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.wrap{padding-bottom:210px}}
+.step{margin:0 0 8px;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
+.step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:13px}
+textarea{width:100%;min-height:112px;resize:vertical;background:var(--panel);color:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;font:500 20px/1.5 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
+textarea:focus{outline:none;border-color:#fff}
+.meta{display:flex;justify-content:space-between;gap:8px;margin:6px 2px 0;font-size:13px;color:var(--sub)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
+.panel h3{margin:0 0 10px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1.5px solid var(--line);background:#000;color:#fff;border-radius:999px;min-height:44px;padding:0 16px;font:600 15px/1 inherit;cursor:pointer}
+.fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fchip{appearance:none;border:1.5px solid var(--line);background:#000;color:#fff;border-radius:12px;min-height:76px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.fchip .g{font-size:30px;line-height:1.1}.fchip .n{font:600 11.5px/1.2 -apple-system,"Hiragino Sans",sans-serif;color:#bbb}
+.fchip[aria-pressed=true]{background:#fff;color:#000;border-color:#fff}.fchip[aria-pressed=true] .n{color:#000}
+@media(max-width:360px){.fgrid{grid-template-columns:repeat(3,1fr)}}
+.chip[aria-pressed=true]{background:#fff;color:#000;border-color:#fff}
+.row{display:grid;grid-template-columns:7.5em 1fr 3em;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+.row output{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:32px;accent-color:#fff}
+.hint{font-size:12.5px;color:var(--sub);margin:8px 0 0}
+.stage-box{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:520px;margin:0 auto}
+#stage{display:block;width:100%;height:auto;aspect-ratio:1/1}
+.badge{position:absolute;left:10px;top:10px;font-size:12px;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:2px 10px}
+.status{position:absolute;inset:auto 0 0 0;padding:8px 12px;font-size:13px;background:rgba(0,0,0,.8);display:none}
+.status.show{display:block}.status.err{color:var(--warn)}
+.status button{margin-left:8px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #fff;background:#000;color:#fff;font:inherit}
+.play{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0}
+.btn{appearance:none;border:1.5px solid #fff;background:#000;color:#fff;border-radius:14px;min-height:48px;padding:0 18px;font:700 16px/1 inherit;cursor:pointer}
+.btn:active{transform:scale(.98)}
+.btn.main{background:#fff;color:#000}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.strip{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.card{position:relative;flex:0 0 auto;height:112px;border:2px solid var(--line);border-radius:10px;overflow:hidden;background:#000;scroll-snap-align:start;cursor:pointer;padding:0}
+.card canvas{display:block;height:100%;width:auto}
+.card[aria-current=true]{border-color:#fff}
+.card i{position:absolute;right:5px;bottom:2px;font:600 11px/1 sans-serif;color:#aaa;font-style:normal}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.96);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:5}
+.bar-in{max-width:1080px;margin:0 auto}
+.bar .seg{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--sub)}
+.bar .seg .chip{min-height:36px;padding:0 12px;font-size:13px}
+.bar .main-row{display:flex;gap:8px}
+.bar .main-row .btn{flex:1;font-size:15px;padding:0 8px}
+.bar .main-row .btn.main{flex:1.5;font-size:16px}
+.note{font-size:12.5px;color:var(--sub);margin:6px 0 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));background:#fff;color:#000;border-radius:12px;padding:10px 16px;font-size:14px;max-width:92vw;z-index:9;display:none;box-shadow:0 4px 20px rgba(0,0,0,.6)}
+.toast.show{display:block}.toast.err{background:#ffdcd5}
+footer{margin-top:24px;font-size:12.5px;color:var(--sub)}
+footer p{margin:4px 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>サブタイトル風 画像メーカー</h1>
+  <p class="lead">文を打つと、1文字ずつの黒い画像と、最後のまとめ画像ができます。そのまま X に送れます。</p>
+
+  <div class="grid">
+    <section aria-label="入力と調整">
+      <p class="step"><b>1</b>文を打つ</p>
+      <label class="sr" for="txt">画像にする文</label>
+      <textarea id="txt" maxlength="80" placeholder="ここに文を打つと、すぐ右に画像が並びます" autocomplete="off" autocapitalize="off" spellcheck="false">こうするとサブタイトル感出るな</textarea>
+      <div class="meta"><span id="count"></span><span>改行はまとめ画像の改行になります</span></div>
+
+      <div class="panel">
+        <h3>字体を選ぶ（12 種）</h3>
+        <div class="fgrid" id="fontChips" role="group" aria-label="字体"></div>
+        <p class="hint" id="fontHint"></p>
+      </div>
+
+      <div class="panel">
+        <h3>大きさと改行</h3>
+        <div class="row"><label for="sc">1文字の大きさ</label><input id="sc" type="range" min="40" max="85" step="1" value="60"><output id="scv"></output></div>
+        <div class="row"><label for="ss">まとめの大きさ</label><input id="ss" type="range" min="60" max="130" step="1" value="100"><output id="ssv"></output></div>
+        <div class="chips" id="lineChips" role="group" aria-label="まとめの行数" style="margin-top:6px"></div>
+        <p class="hint">手で改行したいときは、入力欄で改行します。改行があるときは行数の指定より優先します。</p>
+        <div class="chips" style="margin-top:8px"><button class="chip" id="indent" aria-pressed="true">2行目を右へ下げる</button></div>
+      </div>
+    </section>
+
+    <section aria-label="プレビューと共有">
+      <p class="step"><b>2</b>見る</p>
+      <div class="stage-box">
+        <canvas id="stage" width="1080" height="1080" aria-label="プレビュー"></canvas>
+        <span class="badge" id="badge"></span>
+        <div class="status" id="status" role="status"></div>
+      </div>
+      <div class="play"><button class="btn" id="play">1文字ずつ再生</button></div>
+      <div class="strip" id="strip" aria-label="作った画像の一覧"></div>
+      <p class="note" id="limitNote"></p>
+    </section>
+  </div>
+
+  <footer>
+    <p>打った文字はサーバーに送りません。画像はすべてこの端末の中で作ります（字体だけ Google Fonts から読み込みます）。</p>
+    <p>アニメのサブタイトルの見せ方をまねた「サブタイトル風」の画像を作る、非公式のツールです。</p>
+  </footer>
+</div>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="seg"><span><b style="color:#fff">3</b> 共有する画像</span>
+      <button class="chip" id="selAll" aria-pressed="true">すべて</button>
+      <button class="chip" id="selSum" aria-pressed="false">まとめだけ</button>
+    </div>
+    <div class="main-row">
+      <button class="btn main" id="shareBtn">X に共有</button>
+      <button class="btn" id="saveBtn">画像を保存</button>
+      <button class="btn" id="textBtn">本文だけ X へ</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+var SITE_URL='https://morimori-dev.github.io/subtitle-maker/';
+var PRESETS=[
+ {id:'std',name:'ノーマル',one:['Zen Antique Soft',400],sum:['Zen Old Mincho',900],hint:'1文字は丸みのある筆ふう、まとめは極太の明朝。見本にいちばん近い組み合わせです。'},
+ {id:'bold',name:'極太明朝',one:['Noto Serif JP',900],sum:['Noto Serif JP',900],hint:'極太の明朝。力強く、どの文字でもくずれにくいです。'},
+ {id:'old',name:'古い活字',one:['Zen Old Mincho',900],sum:['Zen Old Mincho',900],hint:'昔の印刷物のような、かどのある太い明朝です。'},
+ {id:'syuku',name:'細筆',one:['Yuji Syuku',400],sum:['Yuji Syuku',400],hint:'細めで品のある筆文字です。'},
+ {id:'boku',name:'かすれ筆',one:['Yuji Boku',400],sum:['Yuji Boku',400],hint:'かすれのある、勢いのある筆文字です。'},
+ {id:'reggae',name:'勢い筆',one:['Reggae One',400],sum:['Reggae One',400],hint:'太くて勢いのある字です。'},
+ {id:'klee',name:'手書き',one:['Klee One',600],sum:['Klee One',600],hint:'万年筆で書いたようなやさしい手書きです。'},
+ {id:'magic',name:'マジック',one:['Yusei Magic',400],sum:['Yusei Magic',400],hint:'マジックペンで書いたような手書きです。'},
+ {id:'maru',name:'丸ゴシック',one:['Zen Maru Gothic',900],sum:['Zen Maru Gothic',900],hint:'太くて角が丸い、親しみやすいゴシックです。'},
+ {id:'dela',name:'極太ゴシック',one:['Dela Gothic One',400],sum:['Dela Gothic One',400],hint:'どっしりした極太のゴシックです。'},
+ {id:'potta',name:'ポップ',one:['Potta One',400],sum:['Potta One',400],hint:'ぽってりしたレトロなポップ体です。'},
+ {id:'hachi',name:'まる文字',one:['Hachi Maru Pop',400],sum:['Hachi Maru Pop',400],hint:'まるっこい手書きポップです。'}
+];
+var loaded={};
+function cssUrl(fw,text){return 'https://fonts.googleapis.com/css2?family='+fw[0].replace(/ /g,'+')+(fw[1]!==400?':wght@'+fw[1]:'')+'&display=swap'+(text?'&text='+encodeURIComponent(text):'')}
+function loadCss(fw,text,force){
+  var key=fw.join()+(text||'');
+  if(loaded[key]&&!force)return loaded[key];
+  return loaded[key]=new Promise(function(res){var l=document.createElement('link');l.rel='stylesheet';l.href=cssUrl(fw,text)+(force?'&r='+Date.now():'');l.onload=function(){res(true)};l.onerror=function(){delete loaded[key];res(false)};document.head.appendChild(l)});
+}
+var LINES=[['auto','自動'],['1','1行'],['2','2行'],['3','3行']];
+var st={preset:'std',lines:'auto',indent:true,sc:60,ss:100,sel:'all'};
+try{var sv=JSON.parse(localStorage.getItem('stm')||'{}');['preset','lines','indent','sc','ss'].forEach(function(k){if(k in sv)st[k]=sv[k]})}catch(e){}
+function save(){try{localStorage.setItem('stm',JSON.stringify(st))}catch(e){}}
+var $=function(id){return document.getElementById(id)};
+var txt=$('txt'),stage=$('stage'),sctx=stage.getContext('2d'),strip=$('strip');
+
+var SKIP=/[\s、。，．,.!！?？「」『』（）()\[\]【】・…〜~"'“”‘’:：;；]/;
+function chars(s){return Array.from(s)}
+function cards(){
+  var t=txt.value; var list=chars(t).filter(function(c){return !SKIP.test(c)}).map(function(c){return{type:'char',ch:c}});
+  if(t.trim())list.push({type:'sum'});
+  return list;
+}
+function preset(){return PRESETS.filter(function(p){return p.id===st.preset})[0]||PRESETS[0]}
+function fstr(fw,px){return fw[1]+' '+px+'px "'+fw[0]+'", "Hiragino Mincho ProN", "Yu Mincho", serif'}
+
+/* 描画 */
+function sizeOf(card,S){return card.type==='char'?[Math.round(1080*S),Math.round(1080*S)]:[Math.round(1080*S),Math.round(899*S)]}
+function drawChar(ctx,ch,W,H){
+  var fw=preset().one,fs=H*st.sc/100;
+  ctx.font=fstr(fw,fs);ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  var m=ctx.measureText(ch),iw=m.actualBoundingBoxLeft+m.actualBoundingBoxRight;
+  if(iw>W*0.92){fs*=W*0.92/iw;ctx.font=fstr(fw,fs);m=ctx.measureText(ch)}
+  var l=m.actualBoundingBoxLeft,r=m.actualBoundingBoxRight,a=m.actualBoundingBoxAscent,d=m.actualBoundingBoxDescent;
+  ctx.fillStyle='#fff';ctx.fillText(ch,W/2-(r-l)/2,H/2-(d-a)/2);
+}
+function splitLines(s){
+  var man=s.replace(/\r/g,'').split('\n').map(function(x){return x.replace(/^\s+|\s+$/g,'')}).filter(function(x){return x});
+  if(man.length>1)return man.map(chars);
+  var a=chars(man[0]||''),n;
+  if(st.lines==='auto')n=a.length<=9?1:(a.length<=40?2:3);else n=+st.lines;
+  n=Math.max(1,Math.min(n,a.length||1));
+  if(n===1)return[a];
+  var out=[],start=0;
+  for(var i=1;i<=n;i++){
+    var end=i===n?a.length:Math.round(a.length*i/n);
+    if(i<n){for(var k=0;k<=2;k++){var c=[end+k,end-k];for(var j=0;j<2;j++){var p=c[j];if(p>start+1&&p<a.length&&/[、。，！？!?）」』]/.test(a[p-1])){end=p;k=9;break}}}}
+    out.push(a.slice(start,end));start=end;
+  }
+  return out;
+}
+function drawSum(ctx,W,H){
+  var fw=preset().sum,lines=splitLines(txt.value),S=W/1080;
+  var fs=Math.min(1080*0.125,1080*0.16)*S*st.ss/100;
+  function layout(fs){
+    ctx.font=fstr(fw,fs);var sp=fs*0.07,ind=fs*0.95,best=0,res=[];
+    lines.forEach(function(ln,i){var w=0,adv=ln.map(function(c){var x=c===' '?fs*0.4:ctx.measureText(c).width;w+=x;return x});w+=sp*Math.max(0,ln.length-1);var off=(st.indent&&i>0)?ind:0;res.push({adv:adv,w:w,off:off});best=Math.max(best,off+w)});
+    return{res:res,best:best,sp:sp};
+  }
+  var L=layout(fs);
+  if(L.best>W*0.92){fs*=W*0.92/L.best;L=layout(fs)}
+  var lh=fs*1.5,tot=lh*(lines.length-1),y0=H/2-tot/2,x0=(W-L.best)/2;
+  ctx.textBaseline='middle';ctx.textAlign='left';ctx.font=fstr(fw,fs);
+  ctx.fillStyle='#f4f4f4';ctx.shadowColor='rgba(255,255,255,0.28)';ctx.shadowBlur=fs*0.1;ctx.shadowOffsetX=fs*0.045;ctx.shadowOffsetY=fs*0.045;
+  lines.forEach(function(ln,i){var x=x0+L.res[i].off,y=y0+lh*i;ln.forEach(function(c,k){if(c!==' ')ctx.fillText(c,x,y);x+=L.res[i].adv[k]+L.sp})});
+  ctx.shadowColor='transparent';
+}
+function drawCard(ctx,card,W,H){
+  ctx.save();ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+  if(card.type==='char')drawChar(ctx,card.ch,W,H);else drawSum(ctx,W,H);
+  ctx.restore();
+}
+
+/* フォント読み込み */
+var fontOK=true,loading=false,token=0;
+function ensureFonts(force){
+  var p=preset(),t=txt.value+'こうするとルパンの',uniq={};
+  var jobs=[p.one,p.sum].map(function(fw){var k=fw.join();if(uniq[k])return null;uniq[k]=1;
+    return loadCss(fw,'',force).then(function(){return document.fonts.load(fw[1]+' 100px "'+fw[0]+'"',t)}).then(function(r){return r.length>0||document.fonts.check(fw[1]+' 20px "'+fw[0]+'"',t)}).catch(function(){return false})}).filter(Boolean);
+  return Promise.all(jobs).then(function(a){return a.every(Boolean)});
+}
+var retryFonts=false;
+function setStatus(msg,err,retry){
+  var s=$('status');s.className='status'+(msg?' show':'')+(err?' err':'');s.textContent=msg||'';
+  if(retry){var b=document.createElement('button');b.textContent='もう一度読み込む';b.onclick=function(){retryFonts=true;update()};s.appendChild(b)}
+}
+
+/* 更新 */
+var cur=0,cardList=[],blobs=[],blobTok=0,blobTimer=0,playing=0;
+var rafId=0;
+function update(){cancelAnimationFrame(rafId);rafId=requestAnimationFrame(doUpdate)}
+async function doUpdate(){
+  var my=++token;stopPlay();
+  cardList=cards();updateCount();
+  setStatus('字体を読み込み中…');loading=true;setButtons();
+  var ok;try{ok=await ensureFonts(retryFonts);retryFonts=false}catch(e){ok=false}
+  if(my!==token)return;
+  loading=false;fontOK=ok;
+  setStatus(ok?'':'字体を読み込めませんでした。代わりの字体で表示しています。',!ok,!ok);
+  renderStrip();showCard(Math.min(cur,Math.max(cardList.length-1,0)),true);
+  setButtons();scheduleBlobs();
+}
+function updateCount(){
+  var n=cardList.length?cardList.length-1:0;
+  $('count').textContent=n?('1文字の画像 '+n+'枚 ＋ まとめ 1枚'):'文を打ってください';
+  var note=n>4?'画像は全部で '+(n+1)+' 枚です。X は 1 回の投稿に載せられる枚数に上限があり、多いと載らないことがあります。載らないときは「まとめだけ」にするか、分けて投稿してください。':'X は 1 回の投稿に載せられる枚数に上限があります。多いと載らないことがあります。';
+  $('limitNote').textContent=note;
+}
+function renderStrip(){
+  strip.textContent='';
+  cardList.forEach(function(c,i){
+    var b=document.createElement('button');b.className='card';b.type='button';b.setAttribute('aria-label',c.type==='sum'?'まとめ画像':(i+1)+'枚目 '+c.ch);
+    var [w,h]=sizeOf(c,0.3);var cv=document.createElement('canvas');cv.width=w;cv.height=h;drawCard(cv.getContext('2d'),c,w,h);
+    var n=document.createElement('i');n.textContent=c.type==='sum'?'まとめ':(i+1);
+    b.append(cv,n);b.onclick=function(){stopPlay();showCard(i)};strip.appendChild(b);
+  });
+}
+function showCard(i,keepScroll){
+  cur=i;var c=cardList[i];sctx.fillStyle='#000';sctx.fillRect(0,0,1080,1080);
+  if(c){
+    var [w,h]=sizeOf(c,1);
+    if(c.type==='char')drawCard(sctx,c,1080,1080);
+    else{var t=document.createElement('canvas');t.width=w;t.height=h;drawCard(t.getContext('2d'),c,w,h);sctx.drawImage(t,0,(1080-h)/2)}
+    $('badge').textContent=c.type==='sum'?'まとめ':(i+1)+' / '+(cardList.length-1);
+  }else $('badge').textContent='';
+  Array.prototype.forEach.call(strip.children,function(el,k){el.setAttribute('aria-current',k===i?'true':'false');if(k===i&&!keepScroll)el.scrollIntoView({inline:'nearest',block:'nearest',behavior:'smooth'})});
+}
+
+/* 再生（音なし） */
+function stopPlay(){if(playing){clearTimeout(playing);playing=0}$('play').textContent='1文字ずつ再生'}
+$('play').onclick=function(){
+  if(playing){stopPlay();return}
+  if(loading||!cardList.length)return;
+  var i=0;$('play').textContent='止める';
+  (function step(){
+    if(i>=cardList.length){playing=0;$('play').textContent='もう一度再生';return}
+    var c=cardList[i];showCard(i,true);i++;
+    playing=setTimeout(step,c.type==='sum'?2400:650);
+  })();
+};
+
+/* 画像（書き出し） */
+function scheduleBlobs(){
+  clearTimeout(blobTimer);blobs=[];var my=++blobTok;
+  blobTimer=setTimeout(async function(){
+    var out=[];
+    for(var i=0;i<cardList.length;i++){
+      var c=cardList[i],[w,h]=sizeOf(c,1),cv=document.createElement('canvas');cv.width=w;cv.height=h;drawCard(cv.getContext('2d'),c,w,h);
+      var b=await new Promise(function(r){cv.toBlob(r,'image/png')});
+      if(my!==blobTok)return;out.push(b);
+    }
+    blobs=out;setButtons();
+  },350);
+}
+function selected(){
+  var out=[];var n=cardList.length;
+  for(var i=0;i<n;i++){
+    if(st.sel==='sum'&&cardList[i].type!=='sum')continue;
+    var name='subtitle-'+String(i+1).padStart(2,'0')+(cardList[i].type==='sum'?'-matome':'')+'.png';
+    out.push({name:name,blob:blobs[i]});
+  }
+  return out;
+}
+function waitBlobs(){return new Promise(function(res){(function chk(){if(blobs.length===cardList.length&&cardList.length)res();else setTimeout(chk,80)})()})}
+
+/* 共有 */
+function shareText(){
+  var t=txt.value.replace(/\s+/g,' ').trim();if(t.length>70)t=t.slice(0,69)+'…';
+  return t+'\n#サブタイトル風 で作った → '+SITE_URL;
+}
+function toast(m,err){var t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},4200)}
+function canShareFiles(files){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare({files:files,text:'x'}))}catch(e){return false}}
+function setButtons(){
+  var ready=!loading&&cardList.length>0;
+  $('saveBtn').disabled=!ready;$('textBtn').disabled=!txt.value.trim();
+  var f=blobs.length===cardList.length&&cardList.length?selected().map(function(x){return new File([x.blob],x.name,{type:'image/png'})}):null;
+  var can=f?canShareFiles(f):!!(navigator.canShare&&navigator.share);
+  $('shareBtn').disabled=!ready||!can;
+  $('shareBtn').textContent=can?'X に共有':'この端末は画像共有に非対応';
+  $('shareBtn').classList.toggle('main',can);$('saveBtn').classList.toggle('main',!can);
+}
+$('shareBtn').onclick=async function(){
+  if(blobs.length!==cardList.length){toast('画像を準備しています。もう一度押してください。');await waitBlobs();setButtons();return}
+  var files=selected().map(function(x){return new File([x.blob],x.name,{type:'image/png'})});
+  if(!canShareFiles(files)){toast('この端末では画像をまとめて共有できません。「画像を保存」を使ってください。',true);return}
+  try{await navigator.share({files:files,text:shareText()})}
+  catch(e){if(e&&e.name==='AbortError')return;toast('共有できませんでした。「画像を保存」を使うか、枚数を減らしてください。',true)}
+};
+$('saveBtn').onclick=async function(){
+  if(blobs.length!==cardList.length){toast('画像を準備しています…');await waitBlobs()}
+  var list=selected();
+  for(var i=0;i<list.length;i++){
+    var a=document.createElement('a');a.href=URL.createObjectURL(list[i].blob);a.download=list[i].name;document.body.appendChild(a);a.click();a.remove();
+    (function(u){setTimeout(function(){URL.revokeObjectURL(u)},4000)})(a.href);
+    await new Promise(function(r){setTimeout(r,300)});
+  }
+  toast(list.length+'枚を保存しました。名前の番号の順に X へ載せてください。');
+};
+$('textBtn').onclick=function(){
+  window.open('https://x.com/intent/post?text='+encodeURIComponent(shareText()),'_blank','noopener');
+  toast('本文だけを X に送ります。画像は「画像を保存」で保存してから、投稿画面で付けてください。');
+};
+function setSel(v){st.sel=v;$('selAll').setAttribute('aria-pressed',v==='all');$('selSum').setAttribute('aria-pressed',v==='sum');setButtons()}
+$('selAll').onclick=function(){setSel('all')};$('selSum').onclick=function(){setSel('sum')};
+
+/* UI 部品 */
+function buildChips(){
+  var fc=$('fontChips');fc.textContent='';
+  PRESETS.forEach(function(p){var b=document.createElement('button');b.className='fchip';b.setAttribute('aria-pressed',p.id===st.preset);b.setAttribute('aria-label',p.name);
+    var g=document.createElement('span');g.className='g';g.textContent='あ';g.style.fontFamily='"'+p.one[0]+'",serif';g.style.fontWeight=p.one[1];
+    var n=document.createElement('span');n.className='n';n.textContent=p.name;b.append(g,n);
+    b.onclick=function(){st.preset=p.id;save();buildChips();update()};fc.appendChild(b);
+    loadCss(p.one,'あ')});
+  $('fontHint').textContent=preset().hint+'（1文字：'+preset().one[0]+'／まとめ：'+preset().sum[0]+'）';
+  var lc=$('lineChips');lc.textContent='';
+  LINES.forEach(function(l){var b=document.createElement('button');b.className='chip';b.textContent='まとめ '+l[1];b.setAttribute('aria-pressed',l[0]===st.lines);
+    b.onclick=function(){st.lines=l[0];save();buildChips();update()};lc.appendChild(b)});
+  $('indent').setAttribute('aria-pressed',st.indent);
+}
+$('indent').onclick=function(){st.indent=!st.indent;save();buildChips();update()};
+function bindRange(id,key){var r=$(id),o=$(id+'v');r.value=st[key];o.textContent=st[key]+'%';
+  r.oninput=function(){st[key]=+r.value;o.textContent=r.value+'%';save();update()}}
+bindRange('sc','sc');bindRange('ss','ss');
+txt.addEventListener('input',update);
+buildChips();
+if(document.fonts&&document.fonts.ready){update()}else{doUpdate()}
+window.__stm={state:st,update:update,get blobs(){return blobs},get cards(){return cardList}};
+})();
+</script>
+</body>
+</html>
