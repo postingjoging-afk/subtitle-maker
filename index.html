@@ -26,8 +26,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .wrap{max-width:1080px;margin:0 auto;padding:20px 16px calc(190px + env(safe-area-inset-bottom))}
 h1{font-size:20px;margin:0 0 4px;font-weight:700}
 .lead{margin:0 0 16px;color:var(--sub);font-size:14px}
-.grid{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}.grid>*{min-width:0}.a-in{order:1}.a-pre{order:2}.a-ctl{order:3}
-@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.a-in{grid-column:1;grid-row:1}.a-ctl{grid-column:1;grid-row:2}.a-pre{grid-column:2;grid-row:1/3;position:sticky;top:12px}.wrap{padding-bottom:210px}}
+.grid{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}.grid>*{min-width:0}.a-in{order:1}.a-pre{order:2}.a-ad{order:3}.a-ctl{order:4}
+@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.a-in{grid-column:1;grid-row:1}.a-ad{grid-column:1;grid-row:2}.a-ctl{grid-column:1;grid-row:3}.a-pre{grid-column:2;grid-row:1/4;position:sticky;top:12px}.wrap{padding-bottom:210px}}
 .step{margin:0 0 8px;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
 .step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:13px}
 textarea{width:100%;min-height:112px;resize:vertical;background:var(--panel);color:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;font:500 20px/1.5 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -37,6 +37,7 @@ textarea:focus{outline:none;border-color:#fff}
 .panel h3{margin:0 0 10px;font-size:14px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{appearance:none;border:1.5px solid var(--line);background:#000;color:#fff;border-radius:999px;min-height:44px;padding:0 16px;font:600 15px/1 inherit;cursor:pointer}
+.gh{margin:12px 0 6px;font-size:12.5px;font-weight:700;color:var(--sub);letter-spacing:.04em}.gh:first-child{margin-top:0}
 .fgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .fchip{appearance:none;border:1.5px solid var(--line);background:#000;color:#fff;border-radius:12px;min-height:76px;padding:6px 2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .fchip .g{font-size:30px;line-height:1.1}.fchip .n{font:600 11.5px/1.2 -apple-system,"Hiragino Sans",sans-serif;color:#bbb}
@@ -66,7 +67,23 @@ input[type=range]{width:100%;height:32px;accent-color:#fff}
 .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(10,10,10,.96);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:5}
 .bar-in{max-width:1080px;margin:0 auto}
 .bar .seg{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--sub)}
-.bar .seg .chip{min-height:36px;padding:0 12px;font-size:13px}
+.bar .seg .chip{min-height:40px;padding:0 12px;font-size:13px}
+@media(max-width:440px){.bar .seg .lbl{display:none}.bar .seg{gap:6px}.bar .seg .chip{padding:0 10px;font-size:12.5px}}
+.ad{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 14px;align-items:center;padding:14px;border-radius:16px;border:2px solid #ff9a4d;background:linear-gradient(135deg,#c2410c 0%,#9f1239 60%,#4a0d24 100%);color:#fff;box-shadow:0 0 18px rgba(255,122,26,.35);animation:adglow 3.6s ease-in-out infinite}
+@keyframes adglow{0%,100%{box-shadow:0 0 14px rgba(255,122,26,.25)}50%{box-shadow:0 0 28px rgba(255,150,70,.55)}}
+@media(prefers-reduced-motion:reduce){.ad{animation:none}}
+.ad .ic{grid-row:1/3;width:64px;height:64px;border-radius:14px;display:block}
+.ad .pr{font-size:11.5px;color:#ffe1cc;display:flex;gap:8px;align-items:center}
+.ad .pr b{background:#fff;color:#9f1239;border-radius:999px;padding:1px 8px;font-size:11.5px}
+.ad h3{margin:0;font-size:18px;line-height:1.3}
+.ad p{margin:0;font-size:14px;line-height:1.5;color:#fff}
+.ad .go{grid-column:1/3;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:8px}
+.ad .store{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:14px;background:#fff;color:#9f1239;font-weight:800;font-size:16px;text-decoration:none;flex:1 1 160px}
+.ad .store:active{transform:scale(.98)}
+.ad .try{color:#fff;font-size:13px;text-decoration:underline;text-underline-offset:3px;min-height:44px;display:inline-flex;align-items:center}
+.ad a:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.after{margin:8px 0 0;font-size:12.5px;color:var(--sub)}.after a{color:#ffb27a;font-weight:700}
+
 .bar .main-row{display:flex;gap:8px}
 .bar .main-row .btn{flex:1;font-size:15px;padding:0 6px;white-space:nowrap}
 .bar .main-row .btn.main{flex:1.5;font-size:16px}
@@ -91,10 +108,24 @@ footer p{margin:4px 0}
       <div class="meta"><span id="count"></span><span>改行はまとめ画像の改行になります</span></div>
 
       </section>
+    <section class="a-ad" aria-label="広告">
+      <div class="ad">
+        <img class="ic" src="img/tonari-icon.png" width="64" height="64" alt="" decoding="async">
+        <div>
+          <div class="pr"><b>無料</b><span>広告・自社のゲーム</span></div>
+          <h3>隣人戦争</h3>
+        </div>
+        <p style="grid-column:1/3">やかんや洗濯機を撃ち合って、隣の家の大黒柱を折る！</p>
+        <div class="go">
+          <a class="store" href="https://apps.apple.com/jp/app/id6816583146?ct=subtitle-maker" target="_blank" rel="noopener">App Store で見る</a>
+          <a class="try" href="https://tonari-sensou-lp.pages.dev/#play" target="_blank" rel="noopener">まず体験版を遊ぶ</a>
+        </div>
+      </div>
+    </section>
     <section class="a-ctl" aria-label="調整">
       <div class="panel">
-        <h3>字体を選ぶ（12 種）</h3>
-        <div class="fgrid" id="fontChips" role="group" aria-label="字体"></div>
+        <h3>字体を選ぶ（<span id="fontCount">18</span> 種）</h3>
+        <div id="fontChips" role="group" aria-label="字体"></div>
         <p class="hint" id="fontHint"></p>
       </div>
 
@@ -118,19 +149,21 @@ footer p{margin:4px 0}
       <div class="play"><button class="btn" id="play">1文字ずつ再生</button></div>
       <div class="strip" id="strip" aria-label="作った画像の一覧"></div>
       <p class="note" id="limitNote"></p>
+      <p class="after" id="after" hidden>作れましたか。スマホゲーム「隣人戦争」（無料・広告）もどうぞ。<a href="https://apps.apple.com/jp/app/id6816583146?ct=subtitle-maker" target="_blank" rel="noopener">App Store で見る</a></p>
     </section>
   </div>
 
   <footer>
     <p>打った文字はサーバーに送りません。画像はすべてこの端末の中で作ります（字体だけ Google Fonts から読み込みます）。</p>
-    <p>「ノーマル」の字体は Kaisei Decol（作者: Kaisei Project Authors）で、SIL Open Font License 1.1 のもとで使っています。<a href="licenses/KaiseiDecol-OFL.txt" style="color:inherit">ライセンスの全文</a></p>
+    <p>字体は Google Fonts（Noto Serif JP・Noto Sans JP ほか、いずれも SIL Open Font License）と、手書き風の「みかちゃん」（作者: みかちゃん。再配布と商用利用が許されており、販売だけが禁止。<a href="licenses/Mikachan-LICENSE.txt" style="color:inherit">利用条件の写し</a>）を使っています。</p>
+    <p>「ノーマル」の字体は、1文字が Kaisei Decol（作者: Kaisei Project Authors）、まとめが Zen Old Mincho（作者: Zen Old Mincho Project Authors）です。どちらも SIL Open Font License 1.1 のもとで使っています。ライセンスの全文: <a href="licenses/KaiseiDecol-OFL.txt" style="color:inherit">Kaisei Decol</a>／<a href="licenses/ZenOldMincho-OFL.txt" style="color:inherit">Zen Old Mincho</a></p>
     <p>アニメのサブタイトルの見せ方をまねた「サブタイトル風」の画像を作る、非公式のツールです。</p>
   </footer>
 </div>
 
 <div class="bar">
   <div class="bar-in">
-    <div class="seg"><span><b style="color:#fff">3</b> 共有する画像</span>
+    <div class="seg"><span><b style="color:#fff">3</b><span class="lbl"> 共有する画像</span></span>
       <button class="chip" id="selAll" aria-pressed="true">すべて</button>
       <button class="chip" id="selSum" aria-pressed="false">まとめだけ</button>
       <button class="chip" id="imgOnly" aria-pressed="false">画像だけで共有</button>
@@ -149,25 +182,33 @@ footer p{margin:4px 0}
 (function(){
 'use strict';
 var SITE_URL='https://postingjoging-afk.github.io/subtitle-maker/';
+var GROUPS=[['mincho','明朝'],['gothic','ゴシック'],['fude','筆・手書き'],['pop','ポップ']];
 var PRESETS=[
- {id:'std',name:'ノーマル',one:['Kaisei Decol',500],sum:['Kaisei Decol',700],hint:'1文字は止め・はらいに丸みのある、流れる明朝。まとめは同じ系統の太い明朝です。見本にいちばん近い組み合わせです。'},
- {id:'bold',name:'極太明朝',one:['Noto Serif JP',900],sum:['Noto Serif JP',900],hint:'極太の明朝。力強く、どの文字でもくずれにくいです。'},
- {id:'old',name:'古い活字',one:['Zen Old Mincho',900],sum:['Zen Old Mincho',900],hint:'昔の印刷物のような、かどのある太い明朝です。'},
- {id:'syuku',name:'細筆',one:['Yuji Syuku',400],sum:['Yuji Syuku',400],hint:'細めで品のある筆文字です。'},
- {id:'boku',name:'かすれ筆',one:['Yuji Boku',400],sum:['Yuji Boku',400],hint:'かすれのある、勢いのある筆文字です。'},
- {id:'reggae',name:'勢い筆',one:['Reggae One',400],sum:['Reggae One',400],hint:'太くて勢いのある字です。'},
- {id:'klee',name:'手書き',one:['Klee One',600],sum:['Klee One',600],hint:'万年筆で書いたようなやさしい手書きです。'},
- {id:'magic',name:'マジック',one:['Yusei Magic',400],sum:['Yusei Magic',400],hint:'マジックペンで書いたような手書きです。'},
- {id:'maru',name:'丸ゴシック',one:['Zen Maru Gothic',900],sum:['Zen Maru Gothic',900],hint:'太くて角が丸い、親しみやすいゴシックです。'},
- {id:'dela',name:'極太ゴシック',one:['Dela Gothic One',400],sum:['Dela Gothic One',400],hint:'どっしりした極太のゴシックです。'},
- {id:'potta',name:'ポップ',one:['Potta One',400],sum:['Potta One',400],hint:'ぽってりしたレトロなポップ体です。'},
- {id:'hachi',name:'まる文字',one:['Hachi Maru Pop',400],sum:['Hachi Maru Pop',400],hint:'まるっこい手書きポップです。'}
+ {g:'mincho',id:'std',name:'ノーマル',one:['Kaisei Decol',500],sum:['Zen Old Mincho',900],hint:'1文字は止め・はらいに丸みのある、流れる明朝。まとめは極太の明朝です。見本にいちばん近い組み合わせです。'},
+ {g:'mincho',id:'min4',name:'明朝 標準',one:['Noto Serif JP',400],sum:['Noto Serif JP',400],hint:'ふつうの太さの明朝です。すっきり読めます。'},
+ {g:'mincho',id:'min7',name:'明朝 太字',one:['Noto Serif JP',700],sum:['Noto Serif JP',700],hint:'しっかり太い明朝です。'},
+ {g:'mincho',id:'bold',name:'明朝 極太',one:['Noto Serif JP',900],sum:['Noto Serif JP',900],hint:'極太の明朝。力強く、どの文字でもくずれにくいです。'},
+ {g:'mincho',id:'old',name:'古い活字',one:['Zen Old Mincho',900],sum:['Zen Old Mincho',900],hint:'昔の印刷物のような、かどのある太い明朝です。'},
+ {g:'gothic',id:'got4',name:'ゴシック 標準',one:['Noto Sans JP',400],sum:['Noto Sans JP',400],hint:'ふつうの太さのゴシックです。'},
+ {g:'gothic',id:'got7',name:'ゴシック 太字',one:['Noto Sans JP',700],sum:['Noto Sans JP',700],hint:'しっかり太いゴシックです。'},
+ {g:'gothic',id:'got9',name:'ゴシック 極太',one:['Noto Sans JP',900],sum:['Noto Sans JP',900],hint:'極太のゴシックです。'},
+ {g:'gothic',id:'maru',name:'丸ゴシック',one:['Zen Maru Gothic',900],sum:['Zen Maru Gothic',900],hint:'太くて角が丸い、親しみやすいゴシックです。'},
+ {g:'gothic',id:'dela',name:'どっしり極太',one:['Dela Gothic One',400],sum:['Dela Gothic One',400],hint:'どっしりした、とびきり太いゴシックです。'},
+ {g:'fude',id:'syuku',name:'細筆',one:['Yuji Syuku',400],sum:['Yuji Syuku',400],hint:'細めで品のある筆文字です。'},
+ {g:'fude',id:'boku',name:'かすれ筆',one:['Yuji Boku',400],sum:['Yuji Boku',400],hint:'かすれのある、勢いのある筆文字です。'},
+ {g:'fude',id:'reggae',name:'勢い筆',one:['Reggae One',400],sum:['Reggae One',400],hint:'太くて勢いのある字です。'},
+ {g:'fude',id:'klee',name:'手書き',one:['Klee One',600],sum:['Klee One',600],hint:'万年筆で書いたようなやさしい手書きです。'},
+ {g:'fude',id:'magic',name:'マジック',one:['Yusei Magic',400],sum:['Yusei Magic',400],hint:'マジックペンで書いたような手書きです。'},
+ {g:'fude',id:'mika',name:'みかちゃん',one:['Mikachan',400,'fonts/mikachan.woff2'],sum:['Mikachan',400,'fonts/mikachan.woff2'],sample:['Mikachan Sample','fonts/mikachan-a.woff2'],hint:'人が書いた文字をもとにした、くせのある手書き風です。選んだときだけ字体（約 1.7MB）を読み込みます。'},
+ {g:'pop',id:'potta',name:'ポップ',one:['Potta One',400],sum:['Potta One',400],hint:'ぽってりしたレトロなポップ体です。'},
+ {g:'pop',id:'hachi',name:'まる文字',one:['Hachi Maru Pop',400],sum:['Hachi Maru Pop',400],hint:'まるっこい手書きポップです。'}
 ];
 var loaded={};
 function cssUrl(fw,text){return 'https://fonts.googleapis.com/css2?family='+fw[0].replace(/ /g,'+')+(fw[1]!==400?':wght@'+fw[1]:'')+'&display=swap'+(text?'&text='+encodeURIComponent(text):'')}
 function loadCss(fw,text,force){
   var key=fw.join()+(text||'');
   if(loaded[key]&&!force)return loaded[key];
+  if(fw[2])return loaded[key]=new Promise(function(res){var st2=document.createElement('style');st2.textContent='@font-face{font-family:"'+fw[0]+'";font-weight:'+fw[1]+';src:url('+fw[2]+') format("woff2");font-display:swap}';document.head.appendChild(st2);res(true)});
   return loaded[key]=new Promise(function(res){var l=document.createElement('link');l.rel='stylesheet';l.href=cssUrl(fw,text)+(force?'&r='+Date.now():'');l.onload=function(){res(true)};l.onerror=function(){delete loaded[key];res(false)};document.head.appendChild(l)});
 }
 var LINES=[['auto','自動'],['1','1行'],['2','2行'],['3','3行']];
@@ -335,6 +376,7 @@ function shareText(){
 }
 function toast(m,err){var t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},4200)}
 var PER=4,shareIdx=0;
+function showAfter(){$('after').hidden=false}
 function canShareData(d){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare(d))}catch(e){return false}}
 function chunksOf(list){var o=[];for(var i=0;i<list.length;i+=PER)o.push(list.slice(i,i+PER));return o}
 function toFiles(list){return list.map(function(x){return new File([x.blob],x.name,{type:'image/png'})})}
@@ -366,7 +408,7 @@ $('shareBtn').onclick=async function(){
   if(idx+1<n){
     shareIdx=idx+1;setButtons();
     toast((idx+1)+'/'+n+' 回目を共有しました。次は「X に共有（'+(shareIdx+1)+'/'+n+'）」を押してください。X では、1 回目の投稿に返信して続きを足します。'+(textDropped?'（この回は本文なしで渡しました）':''));
-  }else{shareIdx=0;setButtons();if(n>1)toast('すべて共有しました。')}
+  }else{shareIdx=0;setButtons();if(n>1)toast('すべて共有しました。');showAfter()}
 };
 $('imgOnly').onclick=function(){st.imgOnly=!st.imgOnly;save();setButtons()};
 $('resetShare').onclick=function(){shareIdx=0;setButtons()};
@@ -378,7 +420,7 @@ $('saveBtn').onclick=async function(){
     (function(u){setTimeout(function(){URL.revokeObjectURL(u)},4000)})(a.href);
     await new Promise(function(r){setTimeout(r,300)});
   }
-  toast(list.length+'枚を保存しました。名前の番号の順に X へ載せてください。');
+  toast(list.length+'枚を保存しました。名前の番号の順に X へ載せてください。');showAfter();
 };
 $('textBtn').onclick=function(){
   window.open('https://x.com/intent/post?text='+encodeURIComponent(shareText()),'_blank','noopener');
@@ -390,11 +432,17 @@ $('selAll').onclick=function(){setSel('all')};$('selSum').onclick=function(){set
 /* UI 部品 */
 function buildChips(){
   var fc=$('fontChips');fc.textContent='';
-  PRESETS.forEach(function(p){var b=document.createElement('button');b.className='fchip';b.setAttribute('aria-pressed',p.id===st.preset);b.setAttribute('aria-label',p.name);
-    var g=document.createElement('span');g.className='g';g.textContent='あ';g.style.fontFamily='"'+p.one[0]+'",serif';g.style.fontWeight=p.one[1];
-    var n=document.createElement('span');n.className='n';n.textContent=p.name;b.append(g,n);
-    b.onclick=function(){st.preset=p.id;save();buildChips();update()};fc.appendChild(b);
-    loadCss(p.one,'あ')});
+  GROUPS.forEach(function(gr){
+    var h=document.createElement('p');h.className='gh';h.textContent=gr[1];fc.appendChild(h);
+    var grid=document.createElement('div');grid.className='fgrid';fc.appendChild(grid);
+    PRESETS.filter(function(p){return p.g===gr[0]}).forEach(function(p){var b=document.createElement('button');b.className='fchip';b.setAttribute('aria-pressed',p.id===st.preset);b.setAttribute('aria-label',p.name);
+      var sam=p.sample||p.one;
+      var g=document.createElement('span');g.className='g';g.textContent='あ';g.style.fontFamily='"'+sam[0]+'",serif';g.style.fontWeight=p.sample?400:p.one[1];
+      var n=document.createElement('span');n.className='n';n.textContent=p.name;b.append(g,n);
+      b.onclick=function(){st.preset=p.id;save();buildChips();update()};grid.appendChild(b);
+      loadCss(p.sample?[sam[0],400,sam[1]]:p.one,'あ')});
+  });
+  $('fontCount').textContent=PRESETS.length;
   $('fontHint').textContent=preset().hint+'（1文字：'+preset().one[0]+'／まとめ：'+preset().sum[0]+'）';
   var lc=$('lineChips');lc.textContent='';
   LINES.forEach(function(l){var b=document.createElement('button');b.className='chip';b.textContent='まとめ '+l[1];b.setAttribute('aria-pressed',l[0]===st.lines);
