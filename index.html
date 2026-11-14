@@ -31,11 +31,11 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg);color-scheme:dark}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;line-height:1.6;-webkit-text-size-adjust:100%}
-.wrap{max-width:1080px;margin:0 auto;padding:20px 16px calc(190px + env(safe-area-inset-bottom))}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px calc(260px + env(safe-area-inset-bottom))}
 h1{font-size:20px;margin:0 0 4px;font-weight:700}
 .lead{margin:0 0 16px;color:var(--sub);font-size:14px}
 .grid{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}.grid>*{min-width:0}.a-in{order:1}.a-pre{order:2}.a-ad{order:3}.a-ctl{order:4}
-@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.a-in{grid-column:1;grid-row:1}.a-ad{grid-column:1;grid-row:2}.a-ctl{grid-column:1;grid-row:3}.a-pre{grid-column:2;grid-row:1/4;position:sticky;top:12px}.wrap{padding-bottom:210px}}
+@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.a-in{grid-column:1;grid-row:1}.a-ad{grid-column:1;grid-row:2}.a-ctl{grid-column:1;grid-row:3}.a-pre{grid-column:2;grid-row:1/4;position:sticky;top:12px}.wrap{padding-bottom:260px}}
 .step{margin:0 0 8px;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
 .step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:13px}
 textarea{width:100%;min-height:112px;resize:vertical;background:var(--panel);color:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;font:500 20px/1.5 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -93,15 +93,17 @@ input[type=range]{width:100%;height:32px;accent-color:#fff}
 .ad a:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .after{margin:8px 0 0;font-size:12.5px;color:var(--sub)}.after a{color:#ffb27a;font-weight:700}
 
-.bar .main-row{display:flex;gap:8px}
-.bar .main-row .btn{flex:1;font-size:15px;padding:0 6px;white-space:nowrap}
-.bar .main-row .btn.main{flex:1.5;font-size:16px}
-.bar .main-row[hidden],.bar .note[hidden]{display:none}
-.bar .main-row.two .btn{flex:1;font-size:15px;min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.bar .main-row.two .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#000;color:#fff;font-size:13px;font-weight:800}
-.bar .note#multiHint{margin:6px 0 0;font-size:12px;line-height:1.4}
+.bar .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:13px;font-weight:800;flex:0 0 auto}
+.bar .save{display:flex;width:100%;min-height:54px;align-items:center;justify-content:center;gap:10px;font-size:17px;padding:0 12px}
+.bar .save .num{background:#000;color:#fff}
+.bar .xrow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.bar .xbtn{flex:0 0 auto;min-height:44px;padding:0 14px;font-size:14px;display:inline-flex;align-items:center;gap:6px;background:transparent;border:1.5px solid #8a8a8a;color:#fff}
+.bar .xbtn .num{width:20px;height:20px;font-size:12px;background:#fff;color:#000}
+.bar .xnote{margin:0;font-size:11.5px;line-height:1.45;color:var(--sub)}
+.bar .xnote[hidden],.bar .overnote[hidden]{display:none}
+.bar .overnote{margin:6px 0 0;font-size:12px;line-height:1.4;color:#ffd2a8}
 .note{font-size:12.5px;color:var(--sub);margin:6px 0 0}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(200px + env(safe-area-inset-bottom));background:#fff;color:#000;border-radius:12px;padding:10px 16px;font-size:14px;max-width:92vw;z-index:9;display:none;box-shadow:0 4px 20px rgba(0,0,0,.6)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(250px + env(safe-area-inset-bottom));background:#fff;color:#000;border-radius:12px;padding:10px 16px;font-size:14px;max-width:92vw;z-index:9;display:none;box-shadow:0 4px 20px rgba(0,0,0,.6)}
 .toast.show{display:block}.toast.err{background:#ffdcd5}
 footer{margin-top:24px;font-size:12.5px;color:var(--sub)}
 footer p{margin:4px 0}
@@ -180,19 +182,13 @@ footer p{margin:4px 0}
     <div class="seg"><span><b style="color:#fff">3</b><span class="lbl"> 共有する画像</span></span>
       <button class="chip" id="selAll" aria-pressed="true">すべて</button>
       <button class="chip" id="selSum" aria-pressed="false">まとめだけ</button>
-      <span id="seg2" style="display:contents"><button class="chip" id="imgOnly" aria-pressed="false">画像だけで共有</button>
-      <button class="chip" id="resetShare" style="display:none">最初から</button></span>
     </div>
-    <div class="main-row two" id="multi" hidden>
-      <button class="btn main" id="step1"><span class="num">1</span><span id="step1T">写真に保存</span></button>
-      <button class="btn main" id="step2"><span class="num">2</span>X をひらく</button>
+    <button class="btn main save" id="saveBtn"><span class="num">1</span><span id="saveT">写真に保存</span></button>
+    <div class="xrow">
+      <button class="btn xbtn" id="xBtn"><span class="num">2</span>X に投稿</button>
+      <p class="xnote" id="xNote" hidden>X に一度に付けられるのは 4 枚までです。5 枚以上の時は、1〜4 枚目だけ付けて開きます。残りは 1 で保存した画像を X で足してください。</p>
     </div>
-    <p class="note" id="multiHint" hidden>1 で共有シートの「画像を保存」を押す。2 の X で写真ボタンから、1 枚目から順に選ぶ。</p>
-    <div class="main-row" id="single">
-      <button class="btn main" id="shareBtn">X に共有</button>
-      <button class="btn" id="saveBtn">画像を保存</button>
-      <button class="btn" id="textBtn" aria-label="本文だけ X へ送る">本文だけ</button>
-    </div>
+    <p class="overnote" id="overNote" hidden>20 枚以上は 1 つの投稿に載せられません。文字をへらすか、「まとめだけ」にしてください。</p>
   </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -236,7 +232,6 @@ try{var sv=JSON.parse(localStorage.getItem('stm')||'{}')||{};
   if(PRESETS.some(function(p){return p.id===sv.preset}))st.preset=sv.preset;
   if(LINES.some(function(l){return l[0]===sv.lines}))st.lines=sv.lines;
   if(typeof sv.indent==='boolean')st.indent=sv.indent;
-  if(typeof sv.imgOnly==='boolean')st.imgOnly=sv.imgOnly;
   if(+sv.sc>=40&&+sv.sc<=85)st.sc=Math.round(+sv.sc);
   if(+sv.ss>=60&&+sv.ss<=130)st.ss=Math.round(+sv.ss);
 }catch(e){}
@@ -325,7 +320,7 @@ function dropBlobs(){clearTimeout(blobTimer);blobs=[];++blobTok}
 function update(){dropBlobs();cancelAnimationFrame(rafId);rafId=requestAnimationFrame(doUpdate);setButtons()}
 async function doUpdate(){
   var my=++token;stopPlay();dropBlobs();
-  cardList=cards();shareIdx=0;updateCount();
+  cardList=cards();updateCount();
   setStatus('字体を読み込み中…');loading=true;setButtons();
   var ok;try{ok=await ensureFonts(retryFonts);retryFonts=false}catch(e){ok=false}
   if(my!==token)return;
@@ -337,7 +332,7 @@ async function doUpdate(){
 function updateCount(){
   var n=cardList.length?cardList.length-1:0;
   $('count').textContent=n?('1文字の画像 '+n+'枚 ＋ まとめ 1枚'):'文を打ってください';
-  var note=n>4?'画像は全部で '+(n+1)+' 枚です。下の 1 で写真に保存し、2 で X をひらいて、写真ボタンから 1 枚目から順に選んでください。':'X に渡せる画像は 1 回 4 枚までです。「画像を保存」で写真に入れ、X のアプリで選んで投稿することもできます。';
+  var note=n>3?'画像は全部で '+(n+1)+' 枚です。下の 1 で写真に保存し、X の写真ボタンから 1 枚目から順に選んでください。':'下の 1 で写真に保存するか、2 で X に画像と本文を渡せます。';
   $('limitNote').textContent=note;
   var total=n?n+1:0,w=$('overWarn');
   if(total>=20){w.textContent='画像が全部で '+total+' 枚になります（最後のまとめを含む）。X は 1 つの投稿に 20 枚以上は載せられません。文字を '+(total-19)+' 文字以上へらすか、「まとめだけ」で共有してください。';w.hidden=false}
@@ -407,80 +402,51 @@ function shareText(){
   return t+'\n作ったサイト → '+SITE_URL+'\n#サブタイトル風';
 }
 function toast(m,err){var t=$('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(toast.h);toast.h=setTimeout(function(){t.className='toast'},4200)}
-var PER=4,shareIdx=0;
+var PER=4;
 function showAfter(){$('after').hidden=false}
-var busy=false,lastOpen=0;
+var busy=false;
 function lock(fn){return async function(){if(busy)return;busy=true;try{await fn.apply(this,arguments)}finally{busy=false}}}
-function openX(){var now=Date.now();if(now-lastOpen<1500)return false;lastOpen=now;window.open('https://x.com/intent/post?text='+encodeURIComponent(shareText()),'_blank','noopener');return true}
 function canShareData(d){try{return !!(navigator.canShare&&navigator.share&&navigator.canShare(d))}catch(e){return false}}
-function chunksOf(list){var o=[];for(var i=0;i<list.length;i+=PER)o.push(list.slice(i,i+PER));return o}
 function toFiles(list){return list.map(function(x){return new File([x.blob],x.name,{type:'image/png'})})}
 function blobsReady(){return blobs.length===cardList.length&&cardList.length>0}
-function dataFor(files,idx,withText){var d={files:files};if(idx===0&&withText)d.text=shareText();return d}
+function total(){return st.sel==='sum'?(cardList.length?1:0):cardList.length}
 function setButtons(){
-  var ready=!loading&&cardList.length>0;
-  $('saveBtn').disabled=!ready;$('textBtn').disabled=!txt.value.trim();
-  var sel=blobsReady()?selected():null,ch=sel?chunksOf(sel):[],n=ch.length;
-  if(shareIdx>=n)shareIdx=0;
-  var can=false;
-  if(sel&&n){var f=toFiles(ch[shareIdx]);can=canShareData(dataFor(f,shareIdx,!st.imgOnly))||canShareData({files:f})}
-  else can=!!(navigator.canShare&&navigator.share);
-  var count=n||Math.ceil((st.sel==='sum'?1:cardList.length)/PER);
-  $('shareBtn').disabled=!ready||!can;
-  $('shareBtn').textContent=can?(count>1?'X に共有（'+(shareIdx+1)+'/'+count+'）':'X に共有'):'この端末は画像共有に非対応';
-  $('shareBtn').classList.toggle('main',can);$('saveBtn').classList.toggle('main',!can);
-  var total=st.sel==='sum'?1:cardList.length,multi=total>PER;
-  $('multi').hidden=!multi;$('multiHint').hidden=!multi;$('single').hidden=multi;
-  var mh=$('multiHint'),over=total>=20;mh.textContent=over?'20 枚以上は 1 つの投稿に載せられません。文字をへらすか、「まとめだけ」にしてください。':'1 で共有シートの「画像を保存」を押す。2 の X で写真ボタンから、1 枚目から順に選ぶ。';mh.style.color=over?'#ffd2a8':'';
-  $('seg2').style.display=multi?'none':'contents';
-  $('step1').disabled=!ready;$('step2').disabled=!txt.value.trim();
-  $('step1T').textContent='写真に保存（'+total+'枚）';
-  $('imgOnly').setAttribute('aria-pressed',!!st.imgOnly);
-  $('resetShare').style.display=shareIdx>0?'':'none';
+  var ready=!loading&&cardList.length>0,n=total();
+  $('saveBtn').disabled=!ready;$('xBtn').disabled=!ready;
+  $('saveT').textContent=n?'写真に保存（'+n+' 枚）':'写真に保存';
+  $('xNote').hidden=!(n>PER);
+  $('overNote').hidden=!(n>=20);
 }
-$('shareBtn').onclick=lock(async function(){
-  if(!blobsReady()){toast('画像を準備しています。もう一度押してください。');await waitBlobs();setButtons();return}
-  var ch=chunksOf(selected()),n=ch.length;if(shareIdx>=n)shareIdx=0;
-  var idx=shareIdx,files=toFiles(ch[idx]),d=dataFor(files,idx,!st.imgOnly),textDropped=false;
-  if(!canShareData(d)&&d.text){d={files:files};textDropped=true}
-  if(!canShareData(d)){toast('この端末では'+files.length+'枚の画像を共有できません。「画像を保存」を使ってください。',true);return}
-  try{await navigator.share(d)}
-  catch(e){if(e&&e.name==='AbortError')return;toast('共有できませんでした。「画像だけで共有」を押して試すか、「画像を保存」を使ってください。',true);return}
-  if(idx+1<n){
-    shareIdx=idx+1;setButtons();
-    toast((idx+1)+'/'+n+' 回目を共有しました。次は「X に共有（'+(shareIdx+1)+'/'+n+'）」を押してください。X では、1 回目の投稿に返信して続きを足します。'+(textDropped?'（この回は本文なしで渡しました）':''));
-  }else{shareIdx=0;setButtons();if(n>1)toast('すべて共有しました。');showAfter()}
-});
-$('step1').onclick=lock(async function(){
-  if(!blobsReady()){toast('画像を準備しています。もう一度押してください。');await waitBlobs();setButtons();return}
-  var files=toFiles(selected()),d={files:files};
-  if(!canShareData(d)){await saveFiles();return}
-  try{await navigator.share(d)}
-  catch(e){if(e&&e.name==='AbortError')return;toast('共有できませんでした。ふつうの保存に切り替えます。',true);await saveFiles();return}
-  toast('共有シートで「'+files.length+' 枚の画像を保存」を押しましたか。次は 2 の「X をひらく」です。');
-});
-$('step2').onclick=function(){
-  if(!openX())return;
-  toast('X の写真ボタンから、保存した画像を 1 枚目から順に選んでください。');showAfter();
-};
-$('imgOnly').onclick=function(){st.imgOnly=!st.imgOnly;save();setButtons()};
-$('resetShare').onclick=function(){shareIdx=0;setButtons()};
-async function saveFiles(){
-  if(!blobsReady()){toast('画像を準備しています…');await waitBlobs()}
-  var list=selected();
+/* 1 写真に保存: 全部の画像を files だけで渡す。使えない端末は続けてダウンロード */
+async function downloadFiles(list){
   for(var i=0;i<list.length;i++){
     var a=document.createElement('a');a.href=URL.createObjectURL(list[i].blob);a.download=list[i].name;document.body.appendChild(a);a.click();a.remove();
     (function(u){setTimeout(function(){URL.revokeObjectURL(u)},4000)})(a.href);
     await new Promise(function(r){setTimeout(r,300)});
   }
-  toast(list.length+'枚を保存しました。名前の番号の順に X へ載せてください。');showAfter();
+  toast(list.length+' 枚をダウンロードしました。名前の番号の順に X へ載せてください。');showAfter();
 }
-$('saveBtn').onclick=lock(saveFiles);
-$('textBtn').onclick=function(){
-  if(!openX())return;
-  toast('本文だけを X に送ります。画像は「画像を保存」で保存してから、投稿画面で付けてください。');
-};
-function setSel(v){st.sel=v;shareIdx=0;$('selAll').setAttribute('aria-pressed',v==='all');$('selSum').setAttribute('aria-pressed',v==='sum');setButtons()}
+$('saveBtn').onclick=lock(async function(){
+  if(!blobsReady()){toast('画像を準備しています。少し待ってから、もう一度押してください。');await waitBlobs();setButtons();return}
+  var list=selected(),d={files:toFiles(list)};
+  if(!canShareData(d)){await downloadFiles(list);return}
+  try{await navigator.share(d)}
+  catch(e){if(e&&e.name==='AbortError')return;toast('共有シートを開けませんでした。ダウンロードに切り替えます。',true);await downloadFiles(list);return}
+  toast('共有シートで「'+list.length+' 枚の画像を保存」を選ぶと、写真に入ります。');showAfter();
+});
+/* 2 X に投稿: 画像（4 枚まで）と本文を渡す */
+$('xBtn').onclick=lock(async function(){
+  if(!blobsReady()){toast('画像を準備しています。少し待ってから、もう一度押してください。');await waitBlobs();setButtons();return}
+  var list=selected(),part=list.slice(0,PER),files=toFiles(part),d={files:files,text:shareText()},noText=false;
+  if(!canShareData(d)){d={files:files};noText=true}
+  if(!canShareData(d)){toast('この端末では X に画像を渡せません。1 の「写真に保存」を使ってください。',true);return}
+  try{await navigator.share(d)}
+  catch(e){if(e&&e.name==='AbortError')return;toast('X に渡せませんでした。1 の「写真に保存」を使ってください。',true);return}
+  var rest=list.length-part.length;
+  toast((rest>0?'1〜4 枚目を渡しました。残りの '+rest+' 枚は、1 で保存した画像を X で足してください。':'画像を渡しました。')+(noText?'本文は付けられませんでした。':''));
+  showAfter();
+});
+function setSel(v){st.sel=v;$('selAll').setAttribute('aria-pressed',v==='all');$('selSum').setAttribute('aria-pressed',v==='sum');setButtons()}
 $('selAll').onclick=function(){setSel('all')};$('selSum').onclick=function(){setSel('sum')};
 
 /* UI 部品 */
