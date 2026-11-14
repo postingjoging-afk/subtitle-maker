@@ -32,6 +32,7 @@ h1{font-size:20px;margin:0 0 4px;font-weight:700}
 .step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:13px}
 textarea{width:100%;min-height:112px;resize:vertical;background:var(--panel);color:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;font:500 20px/1.5 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
 textarea:focus{outline:none;border-color:#fff}
+.over-warn{margin:8px 2px 0;padding:10px 12px;border:1px solid #ff9f43;border-radius:10px;background:rgba(255,120,40,.12);color:#ffd2a8;font-size:14px;line-height:1.5}
 .meta{display:flex;justify-content:space-between;gap:8px;margin:6px 2px 0;font-size:13px;color:var(--sub)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}
 .panel h3{margin:0 0 10px;font-size:14px}
@@ -106,6 +107,7 @@ footer p{margin:4px 0}
       <label class="sr" for="txt">画像にする文</label>
       <textarea id="txt" maxlength="80" placeholder="ここに文を打つと、すぐ右に画像が並びます" autocomplete="off" autocapitalize="off" spellcheck="false">こうするとサブタイトル感出るな</textarea>
       <div class="meta"><span id="count"></span><span>改行はまとめ画像の改行になります</span></div>
+      <p id="overWarn" class="over-warn" role="alert" hidden></p>
 
       </section>
     <section class="a-ad" aria-label="広告">
@@ -311,6 +313,9 @@ function updateCount(){
   $('count').textContent=n?('1文字の画像 '+n+'枚 ＋ まとめ 1枚'):'文を打ってください';
   var note=n>4?'画像は全部で '+(n+1)+' 枚です。X に渡せるのは 1 回 4 枚までなので、4 枚ずつ順に共有します。X では 1 回目の投稿に返信して続きを足してください。別の道として「画像を保存」で写真に入れ、X のアプリの投稿画面で画像を選ぶこともできます（一度に選べる枚数は X の決まりしだいです）。':'X に渡せる画像は 1 回 4 枚までです。「画像を保存」で写真に入れ、X のアプリで選んで投稿することもできます。';
   $('limitNote').textContent=note;
+  var total=n?n+1:0,w=$('overWarn');
+  if(total>=20){w.textContent='画像が全部で '+total+' 枚になります（最後のまとめを含む）。X は 1 つの投稿に 20 枚以上は載せられません。文字を '+(total-19)+' 文字以上へらすか、「まとめだけ」で共有してください。';w.hidden=false}
+  else{w.hidden=true;w.textContent=''}
 }
 function renderStrip(){
   strip.textContent='';
