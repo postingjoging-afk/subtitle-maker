@@ -26,8 +26,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .wrap{max-width:1080px;margin:0 auto;padding:20px 16px calc(190px + env(safe-area-inset-bottom))}
 h1{font-size:20px;margin:0 0 4px;font-weight:700}
 .lead{margin:0 0 16px;color:var(--sub);font-size:14px}
-.grid{display:grid;gap:20px}
-@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.wrap{padding-bottom:210px}}
+.grid{display:grid;gap:20px;grid-template-columns:minmax(0,1fr)}.grid>*{min-width:0}.a-in{order:1}.a-pre{order:2}.a-ctl{order:3}
+@media(min-width:860px){.grid{grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:start}.a-in{grid-column:1;grid-row:1}.a-ctl{grid-column:1;grid-row:2}.a-pre{grid-column:2;grid-row:1/3;position:sticky;top:12px}.wrap{padding-bottom:210px}}
 .step{margin:0 0 8px;font-size:13px;color:var(--sub);display:flex;align-items:center;gap:8px}
 .step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#000;font-size:13px}
 textarea{width:100%;min-height:112px;resize:vertical;background:var(--panel);color:#fff;border:1.5px solid var(--line);border-radius:14px;padding:14px;font:500 20px/1.5 -apple-system,"Hiragino Sans","Noto Sans JP",sans-serif}
@@ -47,7 +47,7 @@ textarea:focus{outline:none;border-color:#fff}
 .row output{text-align:right;color:var(--sub);font-variant-numeric:tabular-nums}
 input[type=range]{width:100%;height:32px;accent-color:#fff}
 .hint{font-size:12.5px;color:var(--sub);margin:8px 0 0}
-.stage-box{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:520px;margin:0 auto}
+.stage-box{position:relative;background:#000;border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:min(520px,58vh);margin:0 auto}
 #stage{display:block;width:100%;height:auto;aspect-ratio:1/1}
 .badge{position:absolute;left:10px;top:10px;font-size:12px;background:rgba(255,255,255,.14);color:#fff;border-radius:999px;padding:2px 10px}
 .status{position:absolute;inset:auto 0 0 0;padding:8px 12px;font-size:13px;background:rgba(0,0,0,.8);display:none}
@@ -68,7 +68,7 @@ input[type=range]{width:100%;height:32px;accent-color:#fff}
 .bar .seg{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px;color:var(--sub)}
 .bar .seg .chip{min-height:36px;padding:0 12px;font-size:13px}
 .bar .main-row{display:flex;gap:8px}
-.bar .main-row .btn{flex:1;font-size:15px;padding:0 8px}
+.bar .main-row .btn{flex:1;font-size:15px;padding:0 6px;white-space:nowrap}
 .bar .main-row .btn.main{flex:1.5;font-size:16px}
 .note{font-size:12.5px;color:var(--sub);margin:6px 0 0}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(170px + env(safe-area-inset-bottom));background:#fff;color:#000;border-radius:12px;padding:10px 16px;font-size:14px;max-width:92vw;z-index:9;display:none;box-shadow:0 4px 20px rgba(0,0,0,.6)}
@@ -84,12 +84,14 @@ footer p{margin:4px 0}
   <p class="lead">文を打つと、1文字ずつの黒い画像と、最後のまとめ画像ができます。そのまま X に送れます。</p>
 
   <div class="grid">
-    <section aria-label="入力と調整">
+    <section class="a-in" aria-label="入力">
       <p class="step"><b>1</b>文を打つ</p>
       <label class="sr" for="txt">画像にする文</label>
       <textarea id="txt" maxlength="80" placeholder="ここに文を打つと、すぐ右に画像が並びます" autocomplete="off" autocapitalize="off" spellcheck="false">こうするとサブタイトル感出るな</textarea>
       <div class="meta"><span id="count"></span><span>改行はまとめ画像の改行になります</span></div>
 
+      </section>
+    <section class="a-ctl" aria-label="調整">
       <div class="panel">
         <h3>字体を選ぶ（12 種）</h3>
         <div class="fgrid" id="fontChips" role="group" aria-label="字体"></div>
@@ -106,7 +108,7 @@ footer p{margin:4px 0}
       </div>
     </section>
 
-    <section aria-label="プレビューと共有">
+    <section class="a-pre" aria-label="プレビュー">
       <p class="step"><b>2</b>見る</p>
       <div class="stage-box">
         <canvas id="stage" width="1080" height="1080" aria-label="プレビュー"></canvas>
@@ -134,7 +136,7 @@ footer p{margin:4px 0}
     <div class="main-row">
       <button class="btn main" id="shareBtn">X に共有</button>
       <button class="btn" id="saveBtn">画像を保存</button>
-      <button class="btn" id="textBtn">本文だけ X へ</button>
+      <button class="btn" id="textBtn" aria-label="本文だけ X へ送る">本文だけ</button>
     </div>
   </div>
 </div>
@@ -202,16 +204,16 @@ function splitLines(s){
   var out=[],start=0;
   for(var i=1;i<=n;i++){
     var end=i===n?a.length:Math.round(a.length*i/n);
-    if(i<n){for(var k=0;k<=2;k++){var c=[end+k,end-k];for(var j=0;j<2;j++){var p=c[j];if(p>start+1&&p<a.length&&/[、。，！？!?）」』]/.test(a[p-1])){end=p;k=9;break}}}}
+    if(i<n){for(var k=0;k<=2;k++){var c=[end+k,end-k];for(var j=0;j<2;j++){var p=c[j];if(p>start+1&&p<a.length&&/[、。，！？!?）」』のはがをにでも]/.test(a[p-1])){end=p;k=9;break}}}}
     out.push(a.slice(start,end));start=end;
   }
   return out;
 }
 function drawSum(ctx,W,H){
   var fw=preset().sum,lines=splitLines(txt.value),S=W/1080;
-  var fs=Math.min(1080*0.125,1080*0.16)*S*st.ss/100;
+  var fs=1080*0.13*S*st.ss/100;
   function layout(fs){
-    ctx.font=fstr(fw,fs);var sp=fs*0.07,ind=fs*0.95,best=0,res=[];
+    ctx.font=fstr(fw,fs);var sp=fs*0.04,ind=fs*0.95,best=0,res=[];
     lines.forEach(function(ln,i){var w=0,adv=ln.map(function(c){var x=c===' '?fs*0.4:ctx.measureText(c).width;w+=x;return x});w+=sp*Math.max(0,ln.length-1);var off=(st.indent&&i>0)?ind:0;res.push({adv:adv,w:w,off:off});best=Math.max(best,off+w)});
     return{res:res,best:best,sp:sp};
   }
@@ -219,7 +221,7 @@ function drawSum(ctx,W,H){
   if(L.best>W*0.92){fs*=W*0.92/L.best;L=layout(fs)}
   var lh=fs*1.5,tot=lh*(lines.length-1),y0=H/2-tot/2,x0=(W-L.best)/2;
   ctx.textBaseline='middle';ctx.textAlign='left';ctx.font=fstr(fw,fs);
-  ctx.fillStyle='#f4f4f4';ctx.shadowColor='rgba(255,255,255,0.28)';ctx.shadowBlur=fs*0.1;ctx.shadowOffsetX=fs*0.045;ctx.shadowOffsetY=fs*0.045;
+  ctx.fillStyle='#f4f4f4';ctx.shadowColor='rgba(255,255,255,0.16)';ctx.shadowBlur=fs*0.1;ctx.shadowOffsetX=fs*0.045;ctx.shadowOffsetY=fs*0.045;
   lines.forEach(function(ln,i){var x=x0+L.res[i].off,y=y0+lh*i;ln.forEach(function(c,k){if(c!==' ')ctx.fillText(c,x,y);x+=L.res[i].adv[k]+L.sp})});
   ctx.shadowColor='transparent';
 }
@@ -232,7 +234,7 @@ function drawCard(ctx,card,W,H){
 /* フォント読み込み */
 var fontOK=true,loading=false,token=0;
 function ensureFonts(force){
-  var p=preset(),t=txt.value+'こうするとルパンの',uniq={};
+  var p=preset(),t=txt.value+'こうするとサブタイトル風',uniq={};
   var jobs=[p.one,p.sum].map(function(fw){var k=fw.join();if(uniq[k])return null;uniq[k]=1;
     return loadCss(fw,'',force).then(function(){return document.fonts.load(fw[1]+' 100px "'+fw[0]+'"',t)}).then(function(r){return r.length>0||document.fonts.check(fw[1]+' 20px "'+fw[0]+'"',t)}).catch(function(){return false})}).filter(Boolean);
   return Promise.all(jobs).then(function(a){return a.every(Boolean)});
